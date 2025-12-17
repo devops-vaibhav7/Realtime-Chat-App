@@ -11,6 +11,7 @@ pipeline{
         stage("Code Build & Test"){
             steps{
                 echo "Code Build Stage"
+                sh "whoami"
                 sh "cd backend && docker build -t chat-app-backend . && cd .."
                 sh "cd frontend && docker build -t chat-app-frontend . && cd .."
             }
@@ -18,7 +19,7 @@ pipeline{
         stage("Push To DockerHub"){
             steps{
                 withCredentials([usernamePassword(
-                    credentialsId:"DockerCreds",
+                    credentialsId:"DockerCred",
                     usernameVariable:"DockerUser", 
                     passwordVariable:"DockerPass")]){
                 sh 'echo $DockerPass | docker login -u $DockerUser --password-stdin'
@@ -31,7 +32,7 @@ pipeline{
         }
         stage("Deploy"){
             steps{
-                sh "docker-compose down && docker-compose up -d --build"
+                sh "docker-compose down && docker-compose up -d"
             }
         }
     }
